@@ -1,0 +1,3 @@
+[submodule "taiga-contrib-openid-auth"]
+	path = taiga-contrib-openid-auth
+	url = ./taiga-contrib-openid-auth
