@@ -27,6 +27,13 @@ x-environment:
   RABBITMQ_PASS: "${RABBITMQ_PASS}"
   # Telemetry settings
   ENABLE_TELEMETRY: "${ENABLE_TELEMETRY}"
+  ENABLE_OPENID: "True"
+  OPENID_USER_URL : "${OPENID_USER_URL}"
+  OPENID_TOKEN_URL : "${OPENID_TOKEN_URL}"
+  OPENID_CLIENT_ID : "${OPENID_CLIENT_ID}"
+  OPENID_CLIENT_SECRET : "${OPENID_CLIENT_SECRET}"
+  OPENID_SCOPE: "${OPENID_SCOPE}"
+  PUBLIC_REGISTER_ENABLED: "${PUBLIC_REGISTER_ENABLED}"
   # ...your customizations go here
 
 x-volumes:
@@ -55,7 +62,9 @@ services:
       - taiga
 
   taiga-back:
-    image: taigaio/taiga-back:latest
+    build:
+      context: taiga-contrib-openid-auth
+      dockerfile: ./docker/back/Dockerfile
     environment: *default-back-environment
     volumes: *default-back-volumes
     networks:
@@ -97,11 +106,20 @@ services:
       - taiga
 
   taiga-front:
-    image: taigaio/taiga-front:latest
+    build:
+      context: taiga-contrib-openid-auth
+      dockerfile: ./docker/front/Dockerfile
+    image: robrotheram/taiga-front-openid
     environment:
       TAIGA_URL: "${TAIGA_SCHEME}://${TAIGA_DOMAIN}"
       TAIGA_WEBSOCKETS_URL: "${WEBSOCKETS_SCHEME}://${TAIGA_DOMAIN}"
       TAIGA_SUBPATH: "${SUBPATH}"
+      ENABLE_OPENID: "true"
+      OPENID_URL : "${OPENID_URL}"
+      OPENID_CLIENT_ID : "${OPENID_CLIENT_ID}"
+      OPENID_NAME: "${OPENID_NAME}"
+      PUBLIC_REGISTER_ENABLED: "${PUBLIC_REGISTER_ENABLED}"
+      DEFAULT_LOGIN_DISABLED: "${DEFAULT_LOGIN_DISABLED}"
       # ...your customizations go here
     networks:
       - taiga
